@@ -104,3 +104,24 @@ router.put('/:id', (req, res) => {
         console.error("Erro detalhado:", error); 
         res.status(500).json({ mensagem: "Erro ao atualizar o jogo." });    }
 });
+
+// ——————————ROTA—PARA—EXCLUIR—JOGOS—(DELETE)———————————————
+router.delete('/:id', (req, res) => {
+    try {
+        let jogos = lerArquivo();
+        const index = jogos.findIndex(jogo_atual => jogo_atual.id == req.params.id); // ← Já explicado anteriormente.
+
+        if (index === -1) {   // ← Já explicado anteriormente.
+            return res.status(404).json({ mensagem: "Jogo não encontrado para exclusão." });
+        }
+
+        jogos.splice(index, 1);   // ← O splice serve para modificar a lista original, ali se diz: pegue o item pelo id tal e apague apenas 1 item a partir dele (ou seja, ele mesmo).
+        fs.writeFileSync(caminho_de_dados, JSON.stringify(jogos, null, 2));
+
+        res.json({ mensagem: "Jogo removido com sucesso!" });
+    } catch (erro) {
+        res.status(500).json({ mensagem: "Erro ao excluir o jogo." });
+    }
+});
+
+module.exports = router;   // ← Exporta para que outros arquivos (nesse caso só o index.js) possam utilizar dele.
