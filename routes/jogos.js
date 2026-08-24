@@ -21,7 +21,7 @@ router.get('/', (req, res) => {
 
 router.post('/', (req, res) => {
     try {
-        const { id, nome, desenvolvedora, genero, ano_lancamento} = req.body;
+        const { id, nome, ano_lancamento, desenvolvedora, genero } = req.body;
 
         // ↓ Verificando a entrada, pois, nome e ano_lancamento são obrigatórios.
         if (!nome || ano_lancamento === undefined) {   // ← "!" expressa oposto, nulo ou indefinido. "||" expressa "ou". "===" expressa igualdade de tipo de dado e de valor de entrada.
@@ -70,4 +70,37 @@ router.get('/:id', (req, res) => {
     } catch (erro) {
         res.status(500).json({mensagem: "Erro ao buscar jogo."})
     }
+});
+
+// ——————————ROTA—PARA—ATUALIZAR—JOGOS—(PUT)———————————————
+router.put('/:id', (req, res) => {
+    try {
+        const { id } = req.params;
+        const { nome, ano_lancamento, desenvolvedora, genero } = req.body;
+        
+        const jogos = lerArquivo(); 
+
+        const index = jogos.findIndex(jogo_atual => jogo_atual.id == id);
+
+        if (index === -1) {   // ← Diferente do python, o -1 não retorna o último item da lista, aqui se trata de um valor impossível, que não foi encontrado.
+            return res.status(404).json({ mensagem: "Jogo não encontrado." });
+        }
+
+        // ↓ Atualiza o objeto na posição que ele foi encontrado.
+        jogos[index] = {
+            ...jogos[index], // ← O "..." mantém o que já existia e traz para nós aqui, serve muito bem para não complicar com o id.
+            nome,   // ← js permite escrever por cima, ou seja, quem for o mais novo vai ter maior prioridade.
+            ano_lancamento, 
+            desenvolvedora,
+            genero
+        };
+
+        // ↓ Aqui se salva as alterações.
+        fs.writeFileSync('../data/jogos.json', JSON.stringify(jogos, null, 2));
+
+        res.json(jogos[index]);
+
+    } catch (error) {
+        console.error("Erro detalhado:", error); 
+        res.status(500).json({ mensagem: "Erro ao atualizar o jogo." });    }
 });
