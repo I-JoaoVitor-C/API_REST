@@ -37,7 +37,7 @@ router.post('/', (req, res) => {
 
         // ↓ Criando objeto (id automaticamente gerado)
         const novoJogo = {
-            id: Date.now(),   // ← Date.now() serve para registrar o id com o momento em ms que o jogo foi registrado (para garantir que seja único).
+            id: Date.now(),   // ← Date.now() serve para registrar o id com o momento em ms que o jogo foi  (para garantir que seja único).
             nome,   // ← Importante lembrar, quando o nome da propriedade e da variavel for a mesma, não precisa repetir.
             ano_lancamento,
             desenvolvedora: desenvolvedora|| "",
@@ -52,4 +52,22 @@ router.post('/', (req, res) => {
         res.status(500).json({ mensagem: "Erro ao salvar o jogo." });
     }
     
+});
+
+// ——————————ROTA—PARA—BUSCAR—JOGO—POR—ID—(GET)—————————————
+
+router.get('/:id', (req, res) => {
+
+    try {
+        const jogos = lerArquivo();
+        const jogo = jogos.find(jogo_atual => jogo_atual.id == req.params.id);
+    
+        if (!jogo) {
+            return res.status(404).json({mensagem: "Jogo não encontrado."});
+        }
+
+        res.json(jogo);
+    } catch (erro) {
+        res.status(500).json({mensagem: "Erro ao buscar jogo."})
+    }
 });
