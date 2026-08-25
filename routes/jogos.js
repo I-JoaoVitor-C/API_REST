@@ -1,7 +1,7 @@
 const express = require('express'); 
 const router = express.Router(); 
 const fs = require('fs'); 
-const caminho_de_dados = require('../data/jogos.json'); 
+const caminho_de_dados = './data/jogos.json'; 
 
 function lerArquivo() { 
     const dados = fs.readFileSync(caminho_de_dados, 'utf-8'); 
@@ -15,6 +15,7 @@ router.get('/', (req, res) => {
         const jogos = lerArquivo();
         res.json(jogos);
     } catch (erro) {
+        console.error("ERRO REAL NO TERMINAL:", erro);
         res.status(500).json({mensagem: "Erro ao ler os dados." });
     }
 });
@@ -96,7 +97,7 @@ router.put('/:id', (req, res) => {
         };
 
         // ↓ Aqui se salva as alterações.
-        fs.writeFileSync('../data/jogos.json', JSON.stringify(jogos, null, 2));
+        fs.writeFileSync(caminho_de_dados, JSON.stringify(jogos, null, 2));
 
         res.json(jogos[index]);
 
